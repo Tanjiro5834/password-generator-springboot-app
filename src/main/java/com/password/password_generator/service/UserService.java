@@ -23,8 +23,13 @@ public class UserService {
             throw new RuntimeException("Username already exists");
         }
 
+        if (userRepository.findByEmail(request.getEmail()) != null) {
+            throw new RuntimeException("Email already exists");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
@@ -33,12 +38,12 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail());
-        if (user == null || !user.getPassword().equals(request.getPassword())) {
+        if (user == null) {
             throw new RuntimeException("Invalid email or password");
         }
 
-        if(!matchesPassword(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Password does not match");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
         }
 
         return LoginResponse.builder()
@@ -46,10 +51,6 @@ public class UserService {
                 .username(user.getUsername())
                 .token("sample-jwt-token")
                 .build();
-    }
-
-    public boolean matchesPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
     public RegisterResponse toDTO(User user) {

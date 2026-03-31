@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class RootController {
 
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String root() {
+        return "authentication"; // loads authentication.html
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "index"; // loads index.html
     }
 }

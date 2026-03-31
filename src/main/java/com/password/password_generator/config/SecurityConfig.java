@@ -20,7 +20,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index", "/index.html", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers(
+                    "/",
+                    "/authentication",
+                    "/authentication.html",
+                    "/index",
+                    "/index.html",
+                    "/dashboard",
+                    "/api/auth/**",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/webjars/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(Customizer.withDefaults());

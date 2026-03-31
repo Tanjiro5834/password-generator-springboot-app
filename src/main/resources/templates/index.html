@@ -284,14 +284,12 @@
       transition: width 0.25s ease, background 0.25s ease;
     }
 
-    .auth-tabs {
+    .auth-link-card {
       display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .auth-tab {
-      flex: 1;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .hidden {
@@ -515,48 +513,11 @@
           </div>
         </div>
 
-        <!-- RIGHT: AUTH + MANAGER -->
+        <!-- RIGHT: PASSWORD MANAGER -->
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div class="section-title mb-0">Vault Access & Password Manager</div>
-            <span id="authStatus" class="pill">Guest Mode</span>
-          </div>
-
-          <div id="authSection">
-            <div class="auth-tabs">
-              <button class="btn btn-soft auth-tab" id="showLoginBtn" type="button">Login</button>
-              <button class="btn btn-soft auth-tab" id="showRegisterBtn" type="button">Register</button>
-            </div>
-
-            <form id="loginForm" class="control-block">
-              <div class="section-title">Login</div>
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
-              </div>
-              <button class="btn btn-apple w-100" type="submit">Login</button>
-            </form>
-
-            <form id="registerForm" class="control-block hidden">
-              <div class="section-title">Register</div>
-              <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input type="text" id="registerName" class="form-control" placeholder="Enter your name">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" id="registerPassword" class="form-control" placeholder="Create a password">
-              </div>
-              <button class="btn btn-apple w-100" type="submit">Register</button>
-            </form>
+            <div class="section-title mb-0">Password Manager</div>
+            <span id="authStatus" class="pill">Vault Locked</span>
           </div>
 
           <div id="managerSection" class="hidden">
@@ -636,9 +597,12 @@
 
           <div id="guestVaultNotice" class="control-block">
             <div class="section-title">Vault Locked</div>
-            <p class="mb-0 muted">
-              Register or login to save, search, edit, and delete your password entries.
-            </p>
+            <div class="auth-link-card">
+              <p class="mb-0 muted">
+                Login or register from the dedicated authentication page to manage your saved passwords.
+              </p>
+              <a href="authentication.html" class="btn btn-apple">Go to Authentication</a>
+            </div>
           </div>
         </div>
       </div>
@@ -669,12 +633,6 @@
     const themeIcon = document.getElementById("themeIcon");
     const copiedToast = document.getElementById("copiedToast");
 
-    const showLoginBtn = document.getElementById("showLoginBtn");
-    const showRegisterBtn = document.getElementById("showRegisterBtn");
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-
-    const authSection = document.getElementById("authSection");
     const managerSection = document.getElementById("managerSection");
     const guestVaultNotice = document.getElementById("guestVaultNotice");
     const authStatus = document.getElementById("authStatus");
@@ -831,27 +789,17 @@
       applyTheme(currentTheme === "light" ? "dark" : "light");
     }
 
-    function showLogin() {
-      loginForm.classList.remove("hidden");
-      registerForm.classList.add("hidden");
-    }
-
-    function showRegister() {
-      registerForm.classList.remove("hidden");
-      loginForm.classList.add("hidden");
-    }
-
     function setAuthenticatedUI(user) {
       currentUser = user;
-      authStatus.textContent = user ? `Logged In: ${user.name || user.email}` : "Guest Mode";
+      authStatus.textContent = user ? `Logged In: ${user.name || user.email}` : "Vault Locked";
 
       if (user) {
-        authSection.classList.add("hidden");
+        localStorage.setItem("password-manager-user", JSON.stringify(user));
         managerSection.classList.remove("hidden");
         guestVaultNotice.classList.add("hidden");
         loadPasswordEntries();
       } else {
-        authSection.classList.remove("hidden");
+        localStorage.removeItem("password-manager-user");
         managerSection.classList.add("hidden");
         guestVaultNotice.classList.remove("hidden");
         passwordTableBody.innerHTML = `
@@ -859,66 +807,6 @@
             <td colspan="6" class="text-center muted">No saved passwords yet.</td>
           </tr>
         `;
-      }
-    }
-
-    async function handleRegister(event) {
-      event.preventDefault();
-
-      const payload = {
-        name: document.getElementById("registerName").value.trim(),
-        email: document.getElementById("registerEmail").value.trim(),
-        password: document.getElementById("registerPassword").value
-      };
-
-      try {
-        const response = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error("Registration failed.");
-        }
-
-        const user = await response.json();
-        alert("Registration successful. You can now manage your vault.");
-        setAuthenticatedUI(user);
-      } catch (error) {
-        console.error(error);
-        alert("Registration failed.");
-      }
-    }
-
-    async function handleLogin(event) {
-      event.preventDefault();
-
-      const payload = {
-        email: document.getElementById("loginEmail").value.trim(),
-        password: document.getElementById("loginPassword").value
-      };
-
-      try {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error("Login failed.");
-        }
-
-        const user = await response.json();
-        setAuthenticatedUI(user);
-      } catch (error) {
-        console.error(error);
-        alert("Login failed.");
       }
     }
 
@@ -1081,21 +969,17 @@
     generateBottomBtn.addEventListener("click", generatePassword);
     copyBtn.addEventListener("click", copyPassword);
     themeToggle.addEventListener("click", toggleTheme);
-    showLoginBtn.addEventListener("click", showLogin);
-    showRegisterBtn.addEventListener("click", showRegister);
-    loginForm.addEventListener("submit", handleLogin);
-    registerForm.addEventListener("submit", handleRegister);
     passwordEntryForm.addEventListener("submit", savePasswordEntry);
     clearFormBtn.addEventListener("click", clearEntryForm);
     logoutBtn.addEventListener("click", logout);
     searchInput.addEventListener("input", filterEntries);
 
     const savedTheme = localStorage.getItem("password-generator-theme") || "light";
+    const savedUser = localStorage.getItem("password-manager-user");
     applyTheme(savedTheme);
     updateLengthLabel();
     updateStrength();
-    setAuthenticatedUI(null);
-    showLogin();
+    setAuthenticatedUI(savedUser ? JSON.parse(savedUser) : null);
   </script>
 </body>
 </html>
