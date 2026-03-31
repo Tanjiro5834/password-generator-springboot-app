@@ -1,390 +1,427 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apple-Inspired Password Generator</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Generator & Manager</title>
 
-    <style>
-      :root {
-        --bg-main: #f5f5f7;
-        --bg-card: rgba(255, 255, 255, 0.75);
-        --text-main: #1d1d1f;
-        --text-muted: #6e6e73;
-        --border-color: rgba(0, 0, 0, 0.08);
-        --shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-        --input-bg: rgba(255, 255, 255, 0.9);
-        --toggle-bg: #ffffff;
-        --accent: #0071e3;
-        --accent-hover: #005fcc;
-        --success: #34c759;
-        --warning: #ff9f0a;
-        --danger: #ff3b30;
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg-main: #f5f5f7;
+      --bg-card: rgba(255, 255, 255, 0.78);
+      --text-main: #1d1d1f;
+      --text-muted: #6e6e73;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.92);
+      --toggle-bg: #ffffff;
+      --accent: #0071e3;
+      --accent-hover: #005fcc;
+      --success: #34c759;
+      --warning: #ff9f0a;
+      --danger: #ff3b30;
+    }
+
+    html[data-theme="dark"] {
+      --bg-main: #0b0b0f;
+      --bg-card: rgba(28, 28, 30, 0.78);
+      --text-main: #f5f5f7;
+      --text-muted: #a1a1a6;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      --input-bg: rgba(36, 36, 38, 0.92);
+      --toggle-bg: #1c1c1e;
+      --accent: #0a84ff;
+      --accent-hover: #409cff;
+      --success: #30d158;
+      --warning: #ffd60a;
+      --danger: #ff453a;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(0, 113, 227, 0.10), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(120, 119, 198, 0.12), transparent 30%),
+        var(--bg-main);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .app-wrapper {
+      min-height: 100vh;
+      padding: 28px 16px;
+    }
+
+    .main-card {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      overflow: hidden;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .brand-subtitle {
+      margin: 6px 0 0;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--border-color);
+      background: var(--toggle-bg);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 24px;
+      padding: 24px;
+    }
+
+    .panel {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 20px;
+      height: 100%;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .muted {
+      color: var(--text-muted);
+    }
+
+    .password-display-wrap {
+      background: rgba(127,127,127,0.06);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .password-label {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .password-output-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .password-output {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.15rem;
+      font-weight: 600;
+      outline: none;
+      word-break: break-all;
+    }
+
+    .btn-apple {
+      background: var(--accent);
+      border: none;
+      color: white;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-apple:hover {
+      background: var(--accent-hover);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .btn-soft {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-soft:hover {
+      background: rgba(127, 127, 127, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .control-block {
+      background: rgba(127,127,127,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .length-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .form-range::-webkit-slider-thumb {
+      background: var(--accent);
+    }
+
+    .form-range::-moz-range-thumb {
+      background: var(--accent);
+    }
+
+    .form-check {
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      background: rgba(127, 127, 127, 0.04);
+    }
+
+    .form-check-label {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .option-note {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .strength-box {
+      background: rgba(127,127,127,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .strength-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .strength-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(127, 127, 127, 0.15);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .auth-tab {
+      flex: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .password-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    .password-table th {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      padding: 0 10px 8px;
+      white-space: nowrap;
+    }
+
+    .password-table td {
+      background: rgba(127,127,127,0.05);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 10px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .password-table td:first-child {
+      border-left: 1px solid var(--border-color);
+      border-radius: 14px 0 0 14px;
+    }
+
+    .password-table td:last-child {
+      border-right: 1px solid var(--border-color);
+      border-radius: 0 14px 14px 0;
+    }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: rgba(10, 132, 255, 0.15);
+      color: var(--accent);
+    }
+
+    .copied-toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: var(--text-main);
+      color: var(--bg-main);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      z-index: 9999;
+    }
+
+    .copied-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .content-grid {
+        grid-template-columns: 1fr;
       }
+    }
 
-      html[data-theme="dark"] {
-        --bg-main: #0b0b0f;
-        --bg-card: rgba(28, 28, 30, 0.72);
-        --text-main: #f5f5f7;
-        --text-muted: #a1a1a6;
-        --border-color: rgba(255, 255, 255, 0.08);
-        --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-        --input-bg: rgba(36, 36, 38, 0.9);
-        --toggle-bg: #1c1c1e;
-        --accent: #0a84ff;
-        --accent-hover: #409cff;
-        --success: #30d158;
-        --warning: #ffd60a;
-        --danger: #ff453a;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background:
-          radial-gradient(
-            circle at top left,
-            rgba(0, 113, 227, 0.1),
-            transparent 30%
-          ),
-          radial-gradient(
-            circle at bottom right,
-            rgba(120, 119, 198, 0.12),
-            transparent 30%
-          ),
-          var(--bg-main);
-        color: var(--text-main);
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-        transition:
-          background 0.3s ease,
-          color 0.3s ease;
-      }
-
-      .app-wrapper {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 16px;
-      }
-
-      .generator-card {
-        width: 100%;
-        max-width: 760px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 28px;
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        overflow: hidden;
-        transition:
-          background 0.3s ease,
-          border-color 0.3s ease;
-      }
-
-      .top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 24px 24px 8px;
-        flex-wrap: wrap;
+    @media (max-width: 576px) {
+      .top-bar,
+      .content-grid {
+        padding: 18px;
       }
 
       .brand-title {
-        font-size: 1.9rem;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        margin: 0;
-      }
-
-      .brand-subtitle {
-        margin: 6px 0 0;
-        color: var(--text-muted);
-        font-size: 0.98rem;
-      }
-
-      .theme-toggle {
-        border: 1px solid var(--border-color);
-        background: var(--toggle-bg);
-        color: var(--text-main);
-        border-radius: 999px;
-        padding: 10px 16px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-
-      .theme-toggle:hover {
-        transform: translateY(-1px);
-      }
-
-      .card-body-custom {
-        padding: 20px 24px 28px;
-      }
-
-      .password-display-wrap {
-        background: var(--input-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 22px;
-        padding: 18px;
-        margin-bottom: 24px;
-        transition:
-          background 0.3s ease,
-          border-color 0.3s ease;
-      }
-
-      .password-label {
-        font-size: 0.84rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 10px;
-        font-weight: 700;
+        font-size: 1.6rem;
       }
 
       .password-output-row {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
       }
 
-      .password-output {
+      .password-actions {
+        display: flex;
+        width: 100%;
+        gap: 10px;
+      }
+
+      .password-actions button {
         flex: 1;
-        min-width: 0;
-        background: transparent;
-        border: none;
-        color: var(--text-main);
-        font-size: 1.15rem;
-        font-weight: 600;
-        outline: none;
-        word-break: break-all;
       }
-
-      .btn-apple {
-        background: var(--accent);
-        border: none;
-        color: white;
-        border-radius: 999px;
-        padding: 11px 18px;
-        font-weight: 600;
-        transition: all 0.25s ease;
-      }
-
-      .btn-apple:hover {
-        background: var(--accent-hover);
-        color: white;
-        transform: translateY(-1px);
-      }
-
-      .btn-soft {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-main);
-        border-radius: 999px;
-        padding: 11px 18px;
-        font-weight: 600;
-        transition: all 0.25s ease;
-      }
-
-      .btn-soft:hover {
-        background: rgba(127, 127, 127, 0.08);
-        transform: translateY(-1px);
-      }
-
-      .section-title {
-        font-size: 1rem;
-        font-weight: 700;
-        margin-bottom: 14px;
-        letter-spacing: -0.02em;
-      }
-
-      .control-block {
-        background: var(--input-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 22px;
-        padding: 20px;
-        margin-bottom: 18px;
-      }
-
-      .length-value {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--accent);
-      }
-
-      .form-range::-webkit-slider-thumb {
-        background: var(--accent);
-      }
-
-      .form-range::-moz-range-thumb {
-        background: var(--accent);
-      }
-
-      .form-check {
-        padding: 14px 16px;
-        margin-bottom: 10px;
-        border: 1px solid var(--border-color);
-        border-radius: 18px;
-        background: rgba(127, 127, 127, 0.04);
-      }
-
-      .form-check:last-child {
-        margin-bottom: 0;
-      }
-
-      .form-check-input {
-        cursor: pointer;
-      }
-
-      .form-check-label {
-        cursor: pointer;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        color: var(--text-main);
-        font-weight: 500;
-      }
-
-      .option-note {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        font-weight: 400;
-      }
-
-      .strength-box {
-        background: var(--input-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 22px;
-        padding: 18px;
-        margin-top: 18px;
-      }
-
-      .strength-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 12px;
-        flex-wrap: wrap;
-      }
-
-      .strength-label {
-        font-weight: 700;
-      }
-
-      .strength-text {
-        font-weight: 700;
-      }
-
-      .strength-bar {
-        width: 100%;
-        height: 12px;
-        background: rgba(127, 127, 127, 0.15);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-
-      .strength-fill {
-        height: 100%;
-        width: 0%;
-        border-radius: 999px;
-        transition:
-          width 0.25s ease,
-          background 0.25s ease;
-      }
-
-      .footer-note {
-        margin-top: 18px;
-        color: var(--text-muted);
-        font-size: 0.92rem;
-        text-align: center;
-      }
-
-      .copied-toast {
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        background: var(--text-main);
-        color: var(--bg-main);
-        padding: 12px 16px;
-        border-radius: 14px;
-        font-weight: 600;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(12px);
-        transition: all 0.25s ease;
-        z-index: 9999;
-      }
-
-      .copied-toast.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      @media (max-width: 576px) {
-        .brand-title {
-          font-size: 1.55rem;
-        }
-
-        .card-body-custom,
-        .top-bar {
-          padding-left: 18px;
-          padding-right: 18px;
-        }
-
-        .password-output-row {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .password-output {
-          width: 100%;
-        }
-
-        .password-actions {
-          display: flex;
-          width: 100%;
-          gap: 10px;
-        }
-
-        .password-actions button {
-          flex: 1;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="app-wrapper">
-      <div class="generator-card">
-        <div class="top-bar">
-          <div>
-            <h1 class="brand-title">Password Generator</h1>
-            <p class="brand-subtitle">
-              Generate sleek, secure passwords without the usual chaos. Very
-              civilized.
-            </p>
-          </div>
-
-          <button id="themeToggle" class="theme-toggle" type="button">
-            <span id="themeIcon">🌙</span>
-            <span id="themeText">Dark Mode</span>
-          </button>
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="main-card">
+      <div class="top-bar">
+        <div>
+          <h1 class="brand-title">Password Generator & Manager</h1>
+          <p class="brand-subtitle">
+            Generate strong passwords, save them to your vault, and manage them in one place.
+          </p>
         </div>
 
-        <div class="card-body-custom">
+        <button id="themeToggle" class="theme-toggle" type="button">
+          <span id="themeIcon">🌙</span>
+          <span id="themeText">Dark Mode</span>
+        </button>
+      </div>
+
+      <div class="content-grid">
+        <!-- LEFT: GENERATOR -->
+        <div class="panel">
+          <div class="section-title">Password Generator</div>
+
           <div class="password-display-wrap">
             <div class="password-label">Generated Password</div>
 
@@ -394,298 +431,671 @@
                 id="passwordOutput"
                 class="password-output"
                 readonly
-                value=""
-                placeholder="Your password will appear here" />
+                placeholder="Your password will appear here"
+              />
 
               <div class="password-actions d-flex gap-2">
-                <button class="btn btn-soft" id="copyBtn" type="button">
-                  Copy
-                </button>
-                <button class="btn btn-apple" id="generateBtn" type="button">
-                  Generate
-                </button>
+                <button class="btn btn-soft" id="copyBtn" type="button">Copy</button>
+                <button class="btn btn-apple" id="generateBtn" type="button">Generate</button>
               </div>
             </div>
           </div>
 
-          <div class="row g-4">
-            <div class="col-lg-6">
-              <div class="control-block">
-                <div
-                  class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="section-title mb-0">Password Length</div>
-                  <div class="length-value">
-                    <span id="lengthValue">16</span> chars
-                  </div>
-                </div>
+          <div class="control-block">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="section-title mb-0">Password Length</div>
+              <div class="length-value"><span id="lengthValue">16</span> chars</div>
+            </div>
 
-                <input
-                  type="range"
-                  class="form-range"
-                  min="6"
-                  max="50"
-                  value="16"
-                  id="lengthSlider" />
+            <input
+              type="range"
+              class="form-range"
+              min="6"
+              max="50"
+              value="16"
+              id="lengthSlider"
+            />
+          </div>
+
+          <div class="control-block">
+            <div class="section-title">Options</div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="includeUppercase" checked>
+              <label class="form-check-label" for="includeUppercase">
+                <span>Uppercase Letters</span>
+                <span class="option-note">A–Z</span>
+              </label>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="includeLowercase" checked>
+              <label class="form-check-label" for="includeLowercase">
+                <span>Lowercase Letters</span>
+                <span class="option-note">a–z</span>
+              </label>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="includeNumbers" checked>
+              <label class="form-check-label" for="includeNumbers">
+                <span>Numbers</span>
+                <span class="option-note">0–9</span>
+              </label>
+            </div>
+
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" id="includeSymbols" checked>
+              <label class="form-check-label" for="includeSymbols">
+                <span>Symbols</span>
+                <span class="option-note">!@#$%^&*</span>
+              </label>
+            </div>
+
+            <div class="mt-3 d-grid">
+              <button class="btn btn-apple" id="generateBottomBtn" type="button">
+                Generate New Password
+              </button>
+            </div>
+          </div>
+
+          <div class="strength-box">
+            <div class="strength-top">
+              <div class="fw-bold">Strength</div>
+              <div id="strengthText" class="fw-bold">Medium</div>
+            </div>
+
+            <div class="strength-bar">
+              <div id="strengthFill" class="strength-fill"></div>
+            </div>
+
+            <div class="muted mt-3 small">
+              Strong passwords are long, random, and deeply disrespectful to brute-force attacks.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: AUTH + MANAGER -->
+        <div class="panel">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="section-title mb-0">Vault Access & Password Manager</div>
+            <span id="authStatus" class="pill">Guest Mode</span>
+          </div>
+
+          <div id="authSection">
+            <div class="auth-tabs">
+              <button class="btn btn-soft auth-tab" id="showLoginBtn" type="button">Login</button>
+              <button class="btn btn-soft auth-tab" id="showRegisterBtn" type="button">Register</button>
+            </div>
+
+            <form id="loginForm" class="control-block">
+              <div class="section-title">Login</div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
               </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+              </div>
+              <button class="btn btn-apple w-100" type="submit">Login</button>
+            </form>
 
-              <div class="strength-box">
-                <div class="strength-top">
-                  <div class="strength-label">Strength</div>
-                  <div id="strengthText" class="strength-text">Medium</div>
+            <form id="registerForm" class="control-block hidden">
+              <div class="section-title">Register</div>
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" id="registerName" class="form-control" placeholder="Enter your name">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="registerPassword" class="form-control" placeholder="Create a password">
+              </div>
+              <button class="btn btn-apple w-100" type="submit">Register</button>
+            </form>
+          </div>
+
+          <div id="managerSection" class="hidden">
+            <div class="control-block">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Search Saved Passwords</label>
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search by title, username, website...">
                 </div>
-
-                <div class="strength-bar">
-                  <div id="strengthFill" class="strength-fill"></div>
-                </div>
-
-                <div class="footer-note mt-3">
-                  Strong passwords are long, random, and mildly offensive to
-                  brute-force attacks.
+                <div class="col-md-6 d-flex align-items-end">
+                  <button class="btn btn-soft w-100" id="logoutBtn" type="button">Logout</button>
                 </div>
               </div>
             </div>
 
-            <div class="col-lg-6">
-              <div class="control-block">
-                <div class="section-title">Options</div>
+            <form id="passwordEntryForm" class="control-block">
+              <div class="section-title">Save / Edit Password Entry</div>
 
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="includeUppercase"
-                    checked />
-                  <label class="form-check-label" for="includeUppercase">
-                    <span>Uppercase Letters</span>
-                    <span class="option-note">A–Z</span>
-                  </label>
-                </div>
+              <input type="hidden" id="entryId">
 
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="includeLowercase"
-                    checked />
-                  <label class="form-check-label" for="includeLowercase">
-                    <span>Lowercase Letters</span>
-                    <span class="option-note">a–z</span>
-                  </label>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Title</label>
+                  <input type="text" id="entryTitle" class="form-control" placeholder="e.g. Gmail, GitHub, Facebook">
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label">Website</label>
+                  <input type="text" id="entryWebsite" class="form-control" placeholder="e.g. github.com">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Username</label>
+                  <input type="text" id="entryUsername" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input type="email" id="entryEmail" class="form-control" placeholder="Enter email">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Password</label>
+                  <input type="text" id="entryPassword" class="form-control" placeholder="Enter or use generated password">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Notes</label>
+                  <textarea id="entryNotes" class="form-control" rows="3" placeholder="Optional notes"></textarea>
+                </div>
+              </div>
 
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="includeNumbers"
-                    checked />
-                  <label class="form-check-label" for="includeNumbers">
-                    <span>Numbers</span>
-                    <span class="option-note">0–9</span>
-                  </label>
-                </div>
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <button class="btn btn-apple" type="submit">Save Entry</button>
+                <button class="btn btn-soft" type="button" id="clearFormBtn">Clear Form</button>
+              </div>
+            </form>
 
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="includeSymbols"
-                    checked />
-                  <label class="form-check-label" for="includeSymbols">
-                    <span>Symbols</span>
-                    <span class="option-note">!@#$%^&*</span>
-                  </label>
-                </div>
-
-                <div class="mt-3 d-grid">
-                  <button
-                    class="btn btn-apple"
-                    id="generateBottomBtn"
-                    type="button">
-                    Generate New Password
-                  </button>
-                </div>
+            <div class="control-block">
+              <div class="section-title">Saved Passwords</div>
+              <div class="table-wrap">
+                <table class="password-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Website</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Password</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="passwordTableBody">
+                    <tr>
+                      <td colspan="6" class="text-center muted">No saved passwords yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
 
-          <p class="footer-note">
-            Built with Bootstrap + vanilla JavaScript. No framework drama today.
-          </p>
+          <div id="guestVaultNotice" class="control-block">
+            <div class="section-title">Vault Locked</div>
+            <p class="mb-0 muted">
+              Register or login to save, search, edit, and delete your password entries.
+            </p>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div id="copiedToast" class="copied-toast">Password copied.</div>
+  <div id="copiedToast" class="copied-toast">Password copied.</div>
 
-    <script>
-      const passwordOutput = document.getElementById("passwordOutput");
-      const lengthSlider = document.getElementById("lengthSlider");
-      const lengthValue = document.getElementById("lengthValue");
+  <script>
+    const passwordOutput = document.getElementById("passwordOutput");
+    const lengthSlider = document.getElementById("lengthSlider");
+    const lengthValue = document.getElementById("lengthValue");
 
-      const includeUppercase = document.getElementById("includeUppercase");
-      const includeLowercase = document.getElementById("includeLowercase");
-      const includeNumbers = document.getElementById("includeNumbers");
-      const includeSymbols = document.getElementById("includeSymbols");
+    const includeUppercase = document.getElementById("includeUppercase");
+    const includeLowercase = document.getElementById("includeLowercase");
+    const includeNumbers = document.getElementById("includeNumbers");
+    const includeSymbols = document.getElementById("includeSymbols");
 
-      const generateBtn = document.getElementById("generateBtn");
-      const generateBottomBtn = document.getElementById("generateBottomBtn");
-      const copyBtn = document.getElementById("copyBtn");
+    const generateBtn = document.getElementById("generateBtn");
+    const generateBottomBtn = document.getElementById("generateBottomBtn");
+    const copyBtn = document.getElementById("copyBtn");
 
-      const strengthText = document.getElementById("strengthText");
-      const strengthFill = document.getElementById("strengthFill");
+    const strengthText = document.getElementById("strengthText");
+    const strengthFill = document.getElementById("strengthFill");
 
-      const themeToggle = document.getElementById("themeToggle");
-      const themeText = document.getElementById("themeText");
-      const themeIcon = document.getElementById("themeIcon");
-      const copiedToast = document.getElementById("copiedToast");
+    const themeToggle = document.getElementById("themeToggle");
+    const themeText = document.getElementById("themeText");
+    const themeIcon = document.getElementById("themeIcon");
+    const copiedToast = document.getElementById("copiedToast");
 
-      function updateLengthLabel() {
-        lengthValue.textContent = lengthSlider.value;
+    const showLoginBtn = document.getElementById("showLoginBtn");
+    const showRegisterBtn = document.getElementById("showRegisterBtn");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+
+    const authSection = document.getElementById("authSection");
+    const managerSection = document.getElementById("managerSection");
+    const guestVaultNotice = document.getElementById("guestVaultNotice");
+    const authStatus = document.getElementById("authStatus");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const searchInput = document.getElementById("searchInput");
+    const passwordTableBody = document.getElementById("passwordTableBody");
+
+    const passwordEntryForm = document.getElementById("passwordEntryForm");
+    const entryId = document.getElementById("entryId");
+    const entryTitle = document.getElementById("entryTitle");
+    const entryWebsite = document.getElementById("entryWebsite");
+    const entryUsername = document.getElementById("entryUsername");
+    const entryEmail = document.getElementById("entryEmail");
+    const entryPassword = document.getElementById("entryPassword");
+    const entryNotes = document.getElementById("entryNotes");
+    const clearFormBtn = document.getElementById("clearFormBtn");
+
+    let currentUser = null;
+    let passwordEntries = [];
+
+    function updateLengthLabel() {
+      lengthValue.textContent = lengthSlider.value;
+    }
+
+    function getStrengthLabelFromPassword(password) {
+      let score = 0;
+
+      if (password.length >= 8) score++;
+      if (password.length >= 12) score++;
+      if (password.length >= 16) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      if (score <= 2) return "WEAK";
+      if (score <= 4) return "MEDIUM";
+      return "STRONG";
+    }
+
+    function updateStrength() {
+      const password = passwordOutput.value;
+
+      if (!password) {
+        strengthText.textContent = "N/A";
+        strengthFill.style.width = "0%";
+        strengthFill.style.background = "transparent";
+        return;
       }
 
-      function getStrengthLabel() {
-        const length = parseInt(lengthSlider.value, 10);
+      let score = 0;
 
-        if (length <= 10) return "WEAK";
-        if (length <= 16) return "MEDIUM";
-        return "STRONG";
+      if (password.length >= 8) score++;
+      if (password.length >= 12) score++;
+      if (password.length >= 16) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      let label = "Weak";
+      let width = "25%";
+      let color = "var(--danger)";
+
+      if (score >= 3 && score <= 4) {
+        label = "Fair";
+        width = "45%";
+        color = "var(--warning)";
+      } else if (score >= 5 && score <= 6) {
+        label = "Strong";
+        width = "75%";
+        color = "var(--success)";
+      } else if (score === 7) {
+        label = "Very Strong";
+        width = "100%";
+        color = "var(--accent)";
       }
 
-      async function generatePassword() {
-        const payload = {
-          length: parseInt(lengthSlider.value, 10),
-          strength: getStrengthLabel(),
-        };
+      strengthText.textContent = label;
+      strengthFill.style.width = width;
+      strengthFill.style.background = color;
+    }
 
-        console.log("Sending payload:", payload);
+    async function generatePassword() {
+      const payload = {
+        length: parseInt(lengthSlider.value, 10),
+        includeUppercase: includeUppercase.checked,
+        includeLowercase: includeLowercase.checked,
+        includeNumbers: includeNumbers.checked,
+        includeSymbols: includeSymbols.checked
+      };
 
-        try {
-          const response = await fetch("/api/passwords/generate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          console.log("Response status:", response.status);
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Server error response:", errorText);
-            passwordOutput.value = "Failed to generate password.";
-            updateStrength();
-            return;
-          }
-
-          const data = await response.json();
-          console.log("Response JSON:", data);
-
-          // Change this if your field name is different
-          passwordOutput.value = data.generatedPassword || "No password returned";
-
-          updateStrength();
-        } catch (error) {
-          console.error("Fetch error:", error);
-          passwordOutput.value = "Failed to connect to backend.";
-          updateStrength();
-        }
-      }
-
-      function updateStrength() {
-        const password = passwordOutput.value;
-
-        if (
-          !password ||
-          password === "Please select at least one option." ||
-          password === "Failed to generate password." ||
-          password === "Failed to connect to backend." ||
-          password === "No password returned"
-        ) {
-          strengthText.textContent = "N/A";
-          strengthFill.style.width = "0%";
-          strengthFill.style.background = "transparent";
-          return;
-        }
-
-        let score = 0;
-
-        if (password.length >= 8) score++;
-        if (password.length >= 12) score++;
-        if (password.length >= 16) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[a-z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
-
-        let label = "Weak";
-        let width = "25%";
-        let color = "var(--danger)";
-
-        if (score >= 3 && score <= 4) {
-          label = "Fair";
-          width = "45%";
-          color = "var(--warning)";
-        } else if (score >= 5 && score <= 6) {
-          label = "Strong";
-          width = "75%";
-          color = "var(--success)";
-        } else if (score === 7) {
-          label = "Very Strong";
-          width = "100%";
-          color = "var(--accent)";
-        }
-
-        strengthText.textContent = label;
-        strengthFill.style.width = width;
-        strengthFill.style.background = color;
-      }
-
-      function copyPassword() {
-        const password = passwordOutput.value;
-
-        if (
-          !password ||
-          password === "Failed to generate password." ||
-          password === "Failed to connect to backend." ||
-          password === "No password returned"
-        )
-          return;
-
-        navigator.clipboard.writeText(password).then(() => {
-          copiedToast.classList.add("show");
-          setTimeout(() => {
-            copiedToast.classList.remove("show");
-          }, 1800);
+      try {
+        const response = await fetch("/api/passwords/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate password.");
+        }
+
+        const data = await response.json();
+        const generatedPassword = data.password ?? data.generatedPassword ?? data.value ?? "";
+
+        passwordOutput.value = generatedPassword;
+        updateStrength();
+
+        if (!generatedPassword) {
+          return;
+        }
+
+        if (currentUser) {
+          const shouldSave = confirm("Do you want to save this generated password to your vault?");
+          if (shouldSave) {
+            entryPassword.value = generatedPassword;
+            if (!entryTitle.value.trim()) {
+              entryTitle.value = "Generated Password";
+            }
+            await savePasswordEntry();
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Failed to generate password.");
+      }
+    }
+
+    function copyPassword() {
+      const password = passwordOutput.value;
+      if (!password) return;
+
+      navigator.clipboard.writeText(password).then(() => {
+        copiedToast.classList.add("show");
+        setTimeout(() => copiedToast.classList.remove("show"), 1800);
+      });
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("password-generator-theme", theme);
+
+      const isDark = theme === "dark";
+      themeText.textContent = isDark ? "Light Mode" : "Dark Mode";
+      themeIcon.textContent = isDark ? "☀️" : "🌙";
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      applyTheme(currentTheme === "light" ? "dark" : "light");
+    }
+
+    function showLogin() {
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+    }
+
+    function showRegister() {
+      registerForm.classList.remove("hidden");
+      loginForm.classList.add("hidden");
+    }
+
+    function setAuthenticatedUI(user) {
+      currentUser = user;
+      authStatus.textContent = user ? `Logged In: ${user.name || user.email}` : "Guest Mode";
+
+      if (user) {
+        authSection.classList.add("hidden");
+        managerSection.classList.remove("hidden");
+        guestVaultNotice.classList.add("hidden");
+        loadPasswordEntries();
+      } else {
+        authSection.classList.remove("hidden");
+        managerSection.classList.add("hidden");
+        guestVaultNotice.classList.remove("hidden");
+        passwordTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center muted">No saved passwords yet.</td>
+          </tr>
+        `;
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+
+      const payload = {
+        name: document.getElementById("registerName").value.trim(),
+        email: document.getElementById("registerEmail").value.trim(),
+        password: document.getElementById("registerPassword").value
+      };
+
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error("Registration failed.");
+        }
+
+        const user = await response.json();
+        alert("Registration successful. You can now manage your vault.");
+        setAuthenticatedUI(user);
+      } catch (error) {
+        console.error(error);
+        alert("Registration failed.");
+      }
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+
+      const payload = {
+        email: document.getElementById("loginEmail").value.trim(),
+        password: document.getElementById("loginPassword").value
+      };
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error("Login failed.");
+        }
+
+        const user = await response.json();
+        setAuthenticatedUI(user);
+      } catch (error) {
+        console.error(error);
+        alert("Login failed.");
+      }
+    }
+
+    async function loadPasswordEntries() {
+      try {
+        const response = await fetch("/api/vault");
+
+        if (!response.ok) {
+          throw new Error("Failed to load password entries.");
+        }
+
+        passwordEntries = await response.json();
+        renderPasswordEntries(passwordEntries);
+      } catch (error) {
+        console.error(error);
+        alert("Failed to load password entries.");
+      }
+    }
+
+    function renderPasswordEntries(entries) {
+      if (!entries.length) {
+        passwordTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center muted">No saved passwords yet.</td>
+          </tr>
+        `;
+        return;
       }
 
-      function applyTheme(theme) {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("password-generator-theme", theme);
+      passwordTableBody.innerHTML = entries.map(entry => `
+        <tr>
+          <td>${entry.title ?? ""}</td>
+          <td>${entry.website ?? ""}</td>
+          <td>${entry.username ?? ""}</td>
+          <td>${entry.email ?? ""}</td>
+          <td>${entry.password ?? ""}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary" onclick="editPasswordEntry(${entry.id})">Edit</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deletePasswordEntry(${entry.id})">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
 
-        const isDark = theme === "dark";
-        themeText.textContent = isDark ? "Light Mode" : "Dark Mode";
-        themeIcon.textContent = isDark ? "☀️" : "🌙";
+    function filterEntries() {
+      const keyword = searchInput.value.toLowerCase().trim();
+
+      const filtered = passwordEntries.filter(entry =>
+        (entry.title ?? "").toLowerCase().includes(keyword) ||
+        (entry.website ?? "").toLowerCase().includes(keyword) ||
+        (entry.username ?? "").toLowerCase().includes(keyword) ||
+        (entry.email ?? "").toLowerCase().includes(keyword)
+      );
+
+      renderPasswordEntries(filtered);
+    }
+
+    async function savePasswordEntry(event) {
+      if (event) event.preventDefault();
+
+      const payload = {
+        title: entryTitle.value.trim(),
+        website: entryWebsite.value.trim(),
+        username: entryUsername.value.trim(),
+        email: entryEmail.value.trim(),
+        password: entryPassword.value.trim(),
+        notes: entryNotes.value.trim(),
+        strength: entryPassword.value.trim() ? getStrengthLabelFromPassword(entryPassword.value.trim()) : null
+      };
+
+      if (!payload.password) {
+        alert("Password is required.");
+        return;
       }
 
-      function toggleTheme() {
-        const currentTheme =
-          document.documentElement.getAttribute("data-theme");
-        applyTheme(currentTheme === "light" ? "dark" : "light");
+      const isEdit = !!entryId.value;
+      const url = isEdit ? `/api/vault/${entryId.value}` : "/api/vault";
+      const method = isEdit ? "PUT" : "POST";
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save password entry.");
+        }
+
+        clearEntryForm();
+        await loadPasswordEntries();
+      } catch (error) {
+        console.error(error);
+        alert("Failed to save password entry.");
+      }
+    }
+
+    async function deletePasswordEntry(id) {
+      const shouldDelete = confirm("Are you sure you want to delete this password entry?");
+      if (!shouldDelete) return;
+
+      try {
+        const response = await fetch(`/api/vault/${id}`, {
+          method: "DELETE"
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete password entry.");
+        }
+
+        await loadPasswordEntries();
+      } catch (error) {
+        console.error(error);
+        alert("Failed to delete password entry.");
+      }
+    }
+
+    window.editPasswordEntry = function(id) {
+      const entry = passwordEntries.find(item => item.id === id);
+      if (!entry) return;
+
+      entryId.value = entry.id ?? "";
+      entryTitle.value = entry.title ?? "";
+      entryWebsite.value = entry.website ?? "";
+      entryUsername.value = entry.username ?? "";
+      entryEmail.value = entry.email ?? "";
+      entryPassword.value = entry.password ?? "";
+      entryNotes.value = entry.notes ?? "";
+    };
+
+    function clearEntryForm() {
+      entryId.value = "";
+      entryTitle.value = "";
+      entryWebsite.value = "";
+      entryUsername.value = "";
+      entryEmail.value = "";
+      entryPassword.value = "";
+      entryNotes.value = "";
+    }
+
+    async function logout() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST"
+        });
+      } catch (error) {
+        console.error("Logout request failed:", error);
       }
 
-      lengthSlider.addEventListener("input", updateLengthLabel);
-      generateBtn.addEventListener("click", generatePassword);
-      generateBottomBtn.addEventListener("click", generatePassword);
-      copyBtn.addEventListener("click", copyPassword);
-      themeToggle.addEventListener("click", toggleTheme);
+      setAuthenticatedUI(null);
+    }
 
-      const savedTheme =
-        localStorage.getItem("password-generator-theme") || "light";
-      applyTheme(savedTheme);
-      updateLengthLabel();
-    </script>
-  </body>
+    lengthSlider.addEventListener("input", updateLengthLabel);
+    generateBtn.addEventListener("click", generatePassword);
+    generateBottomBtn.addEventListener("click", generatePassword);
+    copyBtn.addEventListener("click", copyPassword);
+    themeToggle.addEventListener("click", toggleTheme);
+    showLoginBtn.addEventListener("click", showLogin);
+    showRegisterBtn.addEventListener("click", showRegister);
+    loginForm.addEventListener("submit", handleLogin);
+    registerForm.addEventListener("submit", handleRegister);
+    passwordEntryForm.addEventListener("submit", savePasswordEntry);
+    clearFormBtn.addEventListener("click", clearEntryForm);
+    logoutBtn.addEventListener("click", logout);
+    searchInput.addEventListener("input", filterEntries);
+
+    const savedTheme = localStorage.getItem("password-generator-theme") || "light";
+    applyTheme(savedTheme);
+    updateLengthLabel();
+    updateStrength();
+    setAuthenticatedUI(null);
+    showLogin();
+  </script>
+</body>
 </html>
