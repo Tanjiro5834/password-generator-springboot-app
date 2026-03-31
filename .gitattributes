@@ -1,4 +1,17 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-src/main/resources/static/*.css linguist-detectable=false
+# Make Java dominant
+*.java linguist-detectable=true
+
+# Keep frontend files counted, but reduce their impact
+*.html linguist-vendored=true
+*.css linguist-vendored=true
+*.js linguist-vendored=true
+
+# Optional: keep minified/generated frontend assets out of language stats too
+*.min.js linguist-vendored=true
+*.min.css linguist-vendored=true
+
+# Optional: docs / config not counted much anyway, but can be marked
+*.md linguist-documentation=true
