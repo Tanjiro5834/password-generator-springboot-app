@@ -1,17 +1,17 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# Make Java dominant
+# Prioritize Java
 *.java linguist-detectable=true
 
-# Keep frontend files counted, but reduce their impact
-*.html linguist-vendored=true
-*.css linguist-vendored=true
-*.js linguist-vendored=true
+# Reduce frontend influence a bit
+public/js/* linguist-vendored=true
+public/css/* linguist-vendored=true
+templates/* linguist-vendored=false
+*.html linguist-detectable=true
+*.css linguist-detectable=true
+*.js linguist-detectable=true
 
-# Optional: keep minified/generated frontend assets out of language stats too
+# Ignore generated/minified assets
 *.min.js linguist-vendored=true
 *.min.css linguist-vendored=true
-
-# Optional: docs / config not counted much anyway, but can be marked
-*.md linguist-documentation=true
