@@ -1,17 +1,23 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# Prioritize Java
+# --- Force Java as primary ---
 *.java linguist-detectable=true
 
-# Reduce frontend influence a bit
-public/js/* linguist-vendored=true
-public/css/* linguist-vendored=true
-templates/* linguist-vendored=false
-*.html linguist-detectable=true
-*.css linguist-detectable=true
-*.js linguist-detectable=true
+# --- Completely suppress frontend from stats ---
+*.html linguist-vendored=true
+*.css linguist-vendored=true
+*.js linguist-vendored=true
 
-# Ignore generated/minified assets
+# --- Ignore minified / generated ---
 *.min.js linguist-vendored=true
 *.min.css linguist-vendored=true
+
+# --- Thymeleaf templates specifically ---
+/src/main/resources/templates/* linguist-vendored=true
+
+# --- Static assets ---
+/src/main/resources/static/* linguist-vendored=true
+
+# --- Docs ---
+*.md linguist-documentation=true
