@@ -18,7 +18,7 @@ public class Password {
     @NotNull
     private String generatedPassword;
 
-    private int length;
+    private Integer length;
 
     @NotNull
     private String strength;
